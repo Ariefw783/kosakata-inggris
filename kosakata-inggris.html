@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ulangan Kosakata Inggris - Kayla Zahra Safitri</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: transparent;
+        }
+        .option-label:hover {
+            background-color: #f1f5f9;
+        }
+        input[type="radio"]:checked + .option-content {
+            border-color: #4f46e5;
+            background-color: #eef2ff;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="p-4 md:p-6">
+
+    <!-- Start Screen -->
+    <div id="start-screen" class="max-w-xl mx-auto bg-white rounded-[2rem] p-8 shadow-sm border border-slate-100 text-center">
+        <div class="mb-6">
+            <div class="w-20 h-20 bg-indigo-50 rounded-3xl flex items-center justify-center mx-auto text-3xl mb-4">📖</div>
+            <h1 class="text-2xl font-black text-slate-800 uppercase tracking-tight">Ulangan Kosakata</h1>
+            <p class="text-slate-400 text-xs font-bold mt-1 tracking-widest">INGGRIS - INDONESIA (COLORS)</p>
+        </div>
+
+        <div class="bg-slate-50 rounded-2xl p-6 mb-8 text-left space-y-3">
+            <div class="flex justify-between text-[11px] font-bold uppercase tracking-wider">
+                <span class="text-slate-400">Nama Siswa:</span>
+                <span class="text-slate-800">Kayla Zahra Safitri</span>
+            </div>
+            <div class="flex justify-between text-[11px] font-bold uppercase tracking-wider">
+                <span class="text-slate-400">Hari, Tanggal:</span>
+                <span class="text-slate-800">Jumat, 17 April 2026</span>
+            </div>
+            <div class="flex justify-between text-[11px] font-bold uppercase tracking-wider">
+                <span class="text-slate-400">Durasi:</span>
+                <span class="text-indigo-600">10 Menit</span>
+            </div>
+            <div class="flex justify-between text-[11px] font-bold uppercase tracking-wider">
+                <span class="text-slate-400">Jumlah Soal:</span>
+                <span class="text-slate-800">10 Pilihan Ganda</span>
+            </div>
+        </div>
+
+        <button onclick="startQuiz()" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-[0.2em] shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all">
+            Mulai Mengerjakan
+        </button>
+    </div>
+
+    <!-- Quiz Screen -->
+    <div id="quiz-screen" class="hidden max-w-2xl mx-auto">
+        <!-- Sticky Header Quiz -->
+        <div class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 pb-4 mb-6 flex justify-between items-center">
+            <div>
+                <h2 class="text-sm font-black text-slate-800 uppercase">Kayla Zahra Safitri</h2>
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">Vocabulary: Colors</p>
+            </div>
+            <div class="text-right">
+                <div id="timer" class="text-xl font-black font-mono text-indigo-600">10:00</div>
+                <div id="progress-text" class="text-[10px] text-slate-400 font-bold uppercase">0/10 Terjawab</div>
+            </div>
+        </div>
+
+        <!-- Questions Container -->
+        <form id="quiz-form" class="space-y-8 pb-24">
+            <!-- Questions will be injected here -->
+        </form>
+
+        <!-- Floating Footer Action -->
+        <div class="fixed bottom-6 left-0 right-0 px-6">
+            <div class="max-w-2xl mx-auto">
+                <button id="finish-btn" onclick="finishQuiz()" disabled class="w-full py-4 bg-slate-200 text-slate-400 rounded-2xl font-black uppercase tracking-[0.2em] transition-all cursor-not-allowed">
+                    Selesai & Kirim Nilai
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Screen -->
+    <div id="result-screen" class="hidden max-w-xl mx-auto text-center py-12">
+        <div id="result-icon" class="w-24 h-24 rounded-[2.5rem] flex items-center justify-center mx-auto text-4xl mb-6 shadow-xl"></div>
+        <h2 id="result-status" class="text-2xl font-black text-slate-800 uppercase tracking-tight mb-2"></h2>
+        <p class="text-slate-400 text-sm mb-8">Nilai kamu telah berhasil disimpan ke database.</p>
+        
+        <div class="bg-white rounded-[2rem] p-10 border border-slate-100 shadow-sm inline-block min-w-[200px]">
+            <span class="block text-slate-400 text-[10px] font-black uppercase tracking-[0.3em] mb-2">Skor Akhir</span>
+            <span id="final-score" class="text-7xl font-black text-indigo-600">0</span>
+        </div>
+    </div>
+
+    <script>
+        const questionsData = [
+            { q: "Apa arti dari kosakata 'brown'?", a: "Cokelat", o: ["Hitam", "Biru", "Cokelat", "Putih", "Ungu"] },
+            { q: "Apa arti dari kosakata 'orange'?", a: "Oranye", o: ["Kuning", "Merah", "Hijau", "Oranye", "Biru"] },
+            { q: "Apa bahasa Inggris dari 'Hijau'?", a: "Green", o: ["Blue", "Yellow", "Green", "Black", "White"] },
+            { q: "Apa arti dari kosakata 'blue'?", a: "Biru", o: ["Merah", "Kuning", "Biru", "Ungu", "Putih"] },
+            { q: "Apa bahasa Inggris dari 'Putih'?", a: "White", o: ["Grey", "White", "Black", "Brown", "Pink"] },
+            { q: "Apa arti dari kosakata 'black'?", a: "Hitam", o: ["Putih", "Abu-abu", "Hitam", "Cokelat", "Hijau"] },
+            { q: "Apa arti dari kosakata 'Yellow'?", a: "Kuning", o: ["Merah Muda", "Biru", "Kuning", "Jingga", "Putih"] },
+            { q: "Apa arti dari kosakata 'Purple'?", a: "Ungu", o: ["Hijau", "Ungu", "Biru", "Cokelat", "Hitam"] },
+            { q: "Apa arti dari kosakata 'Pink'?", a: "Merah Muda", o: ["Merah Muda", "Merah", "Ungu", "Biru", "Kuning"] },
+            { q: "Apa bahasa Inggris dari 'Cokelat'?", a: "Brown", o: ["Black", "Green", "White", "Brown", "Purple"] }
+        ];
+
+        let timeLeft = 600; // 10 minutes in seconds
+        let timerId = null;
+        let score = 0;
+        let answeredCount = 0;
+
+        function startQuiz() {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            renderQuestions();
+            startTimer();
+        }
+
+        function renderQuestions() {
+            const form = document.getElementById('quiz-form');
+            form.innerHTML = questionsData.map((item, index) => `
+                <div class="question-block fade-in" style="animation-delay: ${index * 0.1}s">
+                    <p class="text-xs font-black text-slate-400 mb-3 uppercase tracking-widest">Pertanyaan ${index + 1}</p>
+                    <h3 class="text-sm font-bold text-slate-800 mb-4">${item.q}</h3>
+                    <div class="grid grid-cols-1 gap-2">
+                        ${item.o.map((opt, i) => {
+                            const char = String.fromCharCode(97 + i);
+                            return `
+                                <label class="option-label relative cursor-pointer">
+                                    <input type="radio" name="q${index}" value="${opt}" class="hidden" onchange="updateProgress()">
+                                    <div class="option-content border border-slate-200 rounded-xl p-3 flex items-center gap-3 transition-all">
+                                        <span class="w-6 h-6 rounded-lg bg-slate-50 flex items-center justify-center text-[10px] font-black text-slate-400 border border-slate-100 uppercase">${char}</span>
+                                        <span class="text-xs font-semibold text-slate-600">${opt}</span>
+                                    </div>
+                                </label>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateProgress() {
+            const formData = new FormData(document.getElementById('quiz-form'));
+            answeredCount = Array.from(formData.keys()).length;
+            document.getElementById('progress-text').innerText = `${answeredCount}/10 Terjawab`;
+            
+            const finishBtn = document.getElementById('finish-btn');
+            if (answeredCount === 10) {
+                finishBtn.disabled = false;
+                finishBtn.className = "w-full py-4 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-[0.2em] shadow-lg shadow-indigo-100 hover:scale-[1.02] transition-all cursor-pointer";
+            }
+        }
+
+        function startTimer() {
+            timerId = setInterval(() => {
+                timeLeft--;
+                const mins = Math.floor(timeLeft / 60);
+                const secs = timeLeft % 60;
+                document.getElementById('timer').innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+                if (timeLeft <= 60) {
+                    document.getElementById('timer').classList.remove('text-indigo-600');
+                    document.getElementById('timer').classList.add('text-rose-500', 'animate-pulse');
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerId);
+                    forceFinish();
+                }
+            }, 1000);
+        }
+
+        function forceFinish() {
+            alert("Waktu telah habis! Skor akan segera dihitung.");
+            finishQuiz(true);
+        }
+
+        function finishQuiz(isForced = false) {
+            if (!isForced && answeredCount < 10) return;
+
+            clearInterval(timerId);
+            calculateScore();
+
+            // Sembunyikan quiz, tampilkan hasil
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+
+            // Set UI Hasil
+            const scoreDisplay = document.getElementById('final-score');
+            const statusDisplay = document.getElementById('result-status');
+            const iconDisplay = document.getElementById('result-icon');
+            
+            scoreDisplay.innerText = score;
+
+            if (score >= 80) {
+                statusDisplay.innerText = "Luar Biasa!";
+                iconDisplay.innerText = "🏆";
+                iconDisplay.className += " bg-emerald-50 text-emerald-500";
+            } else if (score >= 60) {
+                statusDisplay.innerText = "Bagus!";
+                iconDisplay.innerText = "⭐";
+                iconDisplay.className += " bg-amber-50 text-amber-500";
+            } else {
+                statusDisplay.innerText = "Tetap Semangat!";
+                iconDisplay.innerText = "💪";
+                iconDisplay.className += " bg-slate-50 text-slate-500";
+            }
+
+            // INTEGRASI DATABASE: Kirim ke Parent (Halaman Utama)
+            window.parent.postMessage({ 
+                type: 'SAVE_SCORE', 
+                score: score 
+            }, '*');
+        }
+
+        function calculateScore() {
+            const formData = new FormData(document.getElementById('quiz-form'));
+            let correctCount = 0;
+
+            questionsData.forEach((item, index) => {
+                if (formData.get(`q${index}`) === item.a) {
+                    correctCount++;
+                }
+            });
+
+            score = (correctCount / 10) * 100;
+        }
+    </script>
+</body>
+</html>
