@@ -34,9 +34,9 @@
     <!-- Start Screen -->
     <div id="start-screen" class="max-w-xl mx-auto bg-white rounded-[2rem] p-8 shadow-sm border border-slate-100 text-center">
         <div class="mb-6">
-            <div class="w-20 h-20 bg-indigo-50 rounded-3xl flex items-center justify-center mx-auto text-3xl mb-4">📖</div>
+            <div class="w-20 h-20 bg-indigo-50 rounded-3xl flex items-center justify-center mx-auto text-3xl mb-4">🏫</div>
             <h1 class="text-2xl font-black text-slate-800 uppercase tracking-tight">Ulangan Kosakata</h1>
-            <p class="text-slate-400 text-xs font-bold mt-1 tracking-widest">INGGRIS - INDONESIA (COLORS & STATIONERY)</p>
+            <p class="text-slate-400 text-xs font-bold mt-1 tracking-widest">INGGRIS - INDONESIA (COLORS, TOOLS & SCHOOL)</p>
         </div>
 
         <div class="bg-slate-50 rounded-2xl p-6 mb-8 text-left space-y-3">
@@ -46,7 +46,7 @@
             </div>
             <div class="flex justify-between text-[11px] font-bold uppercase tracking-wider">
                 <span class="text-slate-400">Hari, Tanggal:</span>
-                <span class="text-slate-800">Jumat, 17 April 2026</span>
+                <span class="text-slate-800">Jumat, 24 April 2026</span>
             </div>
             <div class="flex justify-between text-[11px] font-bold uppercase tracking-wider">
                 <span class="text-slate-400">Durasi:</span>
@@ -54,7 +54,7 @@
             </div>
             <div class="flex justify-between text-[11px] font-bold uppercase tracking-wider">
                 <span class="text-slate-400">Jumlah Soal:</span>
-                <span class="text-slate-800">15 Pilihan Ganda</span>
+                <span class="text-slate-800">19 Pilihan Ganda</span>
             </div>
         </div>
 
@@ -69,11 +69,11 @@
         <div class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 pb-4 mb-6 flex justify-between items-center">
             <div>
                 <h2 class="text-sm font-black text-slate-800 uppercase">Kayla Zahra Safitri</h2>
-                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">Vocabulary: Mixed</p>
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">Vocabulary: School Life</p>
             </div>
             <div class="text-right">
                 <div id="timer" class="text-xl font-black font-mono text-indigo-600">10:00</div>
-                <div id="progress-text" class="text-[10px] text-slate-400 font-bold uppercase">0/15 Terjawab</div>
+                <div id="progress-text" class="text-[10px] text-slate-400 font-bold uppercase">0/19 Terjawab</div>
             </div>
         </div>
 
@@ -116,14 +116,18 @@
             { q: "Apa bahasa Inggris dari 'Ungu'?", a: "Purple", o: ["Purple", "Pink", "Green", "Blue", "Red"] },
             { q: "Apa arti dari kosakata 'pink'?", a: "Merah Muda", o: ["Merah Muda", "Merah", "Ungu", "Biru", "Kuning"] },
             { q: "Apa bahasa Inggris dari 'Buku'?", a: "Book", o: ["Bag", "Pen", "Book", "Pencil", "Eraser"] },
-            { q: "Apa arti dari kosakata 'pen'?", a: "Pena/Pulpen", o: ["Pensil", "Buku", "Pena/Pulpen", "Tas", "Penghapus"] },
+            { q: "Apa arti dari kosakata 'pen'?", a: "Pena", o: ["Pensil", "Buku", "Pena", "Tas", "Penghapus"] },
             { q: "Apa arti dari kosakata 'pencil'?", a: "Pensil", o: ["Pena", "Pensil", "Penggaris", "Buku", "Meja"] },
             { q: "Apa bahasa Inggris dari 'Penghapus'?", a: "Eraser", o: ["Ruler", "Pencil", "Eraser", "Bag", "Book"] },
             { q: "Apa arti dari kosakata 'bag'?", a: "Tas", o: ["Buku", "Tas", "Kotak Pensil", "Meja", "Kursi"] },
-            { q: "Apa bahasa Inggris dari 'Cokelat'?", a: "Brown", o: ["Black", "Green", "White", "Brown", "Purple"] }
+            { q: "Apa bahasa Inggris dari 'Kursi'?", a: "Chair", o: ["Table", "Chair", "Desk", "Door", "Window"] },
+            { q: "Apa arti dari kosakata 'table'?", a: "Meja", o: ["Kursi", "Meja", "Papan Tulis", "Lantai", "Dinding"] },
+            { q: "Apa bahasa Inggris dari 'Guru'?", a: "Teacher", o: ["Student", "Principal", "Teacher", "Janitor", "Officer"] },
+            { q: "Apa arti dari kosakata 'student'?", a: "Murid/Siswa", o: ["Guru", "Kepala Sekolah", "Murid/Siswa", "Satpam", "Teman"] },
+            { q: "Apa bahasa Inggris dari 'Ruang Kelas'?", a: "Classroom", o: ["Office", "Library", "Canteen", "Classroom", "Hall"] }
         ];
 
-        let timeLeft = 600; // 10 minutes in seconds
+        let timeLeft = 600; // 10 minutes
         let timerId = null;
         let score = 0;
         let answeredCount = 0;
