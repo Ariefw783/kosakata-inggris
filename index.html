@@ -117,7 +117,7 @@
 
             <!-- Scores Screen -->
             <div id="screen-scores" class="hidden flex flex-col flex-grow p-4 md:p-12 fade-in">
-                <div class="max-w-5xl mx-auto w-full">
+                <div class="max-w-4xl mx-auto w-full">
                     <div class="flex items-center justify-between mb-8">
                         <button onclick="goHome()" class="flex items-center gap-2 px-5 py-3 bg-white rounded-2xl shadow-sm border border-slate-200 font-bold text-[10px] text-slate-600 uppercase tracking-widest hover:bg-slate-50 transition-all">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
@@ -130,9 +130,9 @@
                             <table class="w-full text-left border-collapse">
                                 <thead>
                                     <tr class="bg-slate-50 border-b border-slate-100">
-                                        <th class="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Tanggal</th>
-                                        <th class="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] text-center">Skor</th>
-                                        <th class="px-6 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Laporan Kesalahan</th>
+                                        <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Tanggal</th>
+                                        <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Sesi</th>
+                                        <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] text-center">Skor</th>
                                     </tr>
                                 </thead>
                                 <tbody id="scores-table-body" class="divide-y divide-slate-50">
@@ -217,7 +217,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, query, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, query, addDoc, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBjD9b9J3UIH7cRq2IHPzM86biTR0yrBNQ",
@@ -233,6 +233,12 @@
         const db = getFirestore(app);
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
+        // Expose to window for access in non-module scripts
+        window.db = db;
+        window.appId = appId;
+        window.setDoc = setDoc;
+        window.doc = doc;
+
         let user = null;
 
         signInAnonymously(auth).catch(err => console.error("Firebase Auth Error:", err));
@@ -241,8 +247,20 @@
             if (u) {
                 user = u;
                 loadScoresData();
+                syncQuizLock();
             }
         });
+
+        // Fitur Sinkronisasi Kunci Soal antar Device
+        function syncQuizLock() {
+            const lockRef = doc(db, 'artifacts', appId, 'public', 'data', 'app_status', 'quiz_access');
+            onSnapshot(lockRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    window.isQuizAccessible = docSnap.data().unlocked === true;
+                    updateAccessUI();
+                }
+            });
+        }
 
         window.loadScoresData = function() {
             if (!user) return;
@@ -262,26 +280,17 @@
                 body.innerHTML = items.map(item => {
                     const dateStr = item.timestamp ? new Date(item.timestamp.seconds * 1000).toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) : 'Menyimpan...';
                     const score = item.score || 0;
-                    const wrongs = item.wrongAnswers || [];
                     
                     let colorClass = "text-rose-600 bg-rose-50 border-rose-100";
                     if (score >= 80) colorClass = "text-emerald-600 bg-emerald-50 border-emerald-100";
                     else if (score >= 60) colorClass = "text-amber-600 bg-amber-50 border-amber-100";
 
-                    let wrongSummary = wrongs.length > 0 
-                        ? wrongs.map(w => `<div class="mb-1 p-2 bg-slate-50 rounded-lg text-[10px]"><span class="font-bold text-rose-500">${w.question}</span> <span class="text-slate-400">→</span> <span class="font-bold text-emerald-600">${w.correctAnswer}</span></div>`).join('')
-                        : '<span class="text-emerald-500 font-bold text-[10px] uppercase">Sempurna! Tidak ada kesalahan.</span>';
-
                     return `
-                        <tr class="hover:bg-slate-50/50 transition-colors align-top">
-                            <td class="px-6 py-5 text-[11px] font-bold text-slate-600">${dateStr}</td>
-                            <td class="px-6 py-5 text-center">
+                        <tr class="hover:bg-slate-50/50 transition-colors">
+                            <td class="px-8 py-5 text-xs font-bold text-slate-600">${dateStr}</td>
+                            <td class="px-8 py-5 text-[10px] text-slate-400 font-bold uppercase tracking-tight">Vocabulary Quiz</td>
+                            <td class="px-8 py-5 text-center">
                                 <span class="px-4 py-1.5 rounded-xl text-xs font-black border ${colorClass}">${score}</span>
-                            </td>
-                            <td class="px-6 py-5">
-                                <div class="max-h-32 overflow-y-auto no-scrollbar">
-                                    ${wrongSummary}
-                                </div>
                             </td>
                         </tr>
                     `;
@@ -292,13 +301,13 @@
         };
 
         window.addEventListener('message', async (event) => {
-            // Perbaikan: Mendengarkan semua jenis SAVE_SCORE agar data detail ikut tersimpan
+            // FIX INTRUKSI 1: Update tipe message agar menangkap data dari kosakata-inggris.html
             if (event.data && (event.data.type === 'SAVE_SCORE' || event.data.type === 'SAVE_SCORE_ADVANCED')) {
                 if (!user) return;
                 try {
                     await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'kosakata-inggris'), {
                         score: event.data.score,
-                        wrongAnswers: event.data.wrongAnswers || [],
+                        wrongAnswers: event.data.wrongAnswers || [], // Menyimpan detail kesalahan
                         studentName: event.data.studentName || "Kayla Zahra Safitri",
                         timestamp: serverTimestamp(),
                         uid: user.uid
@@ -311,7 +320,8 @@
     </script>
 
     <script>
-        let isQuizAccessible = false;
+        // State Akses
+        window.isQuizAccessible = false;
 
         function updateClock() {
             const now = new Date();
@@ -327,7 +337,7 @@
         updateClock();
 
         function handleQuizClick() {
-            if(isQuizAccessible) {
+            if(window.isQuizAccessible) {
                 startQuiz();
             } else {
                 const msg = document.createElement('div');
@@ -340,7 +350,7 @@
 
         function openPasswordModal() {
             const modalDesc = document.getElementById('modal-desc');
-            modalDesc.innerText = isQuizAccessible ? 'Masukkan PIN untuk MENGUNCI akses' : 'Masukkan PIN untuk MEMBUKA akses';
+            modalDesc.innerText = window.isQuizAccessible ? 'Masukkan PIN untuk MENGUNCI akses' : 'Masukkan PIN untuk MEMBUKA akses';
             document.getElementById('password-modal').classList.remove('hidden');
             document.getElementById('pass-input').focus();
         }
@@ -350,14 +360,35 @@
             document.getElementById('pass-input').value = '';
         }
 
-        function checkPass() {
+        // FIX INSTRUKSI 2 & 3: Password Persisten & Petunjuk Password
+        async function checkPass() {
             const input = document.getElementById('pass-input').value;
-            if(input === '1999') {
-                isQuizAccessible = !isQuizAccessible;
+            
+            // PETUNJUK: Ganti angka '1999' di bawah ini untuk merubah kata sandi/PIN akses menu soal
+            const MASTER_PIN = '1999';
+
+            if(input === MASTER_PIN) {
+                const newStatus = !window.isQuizAccessible;
+                
+                // Simpan ke Firestore agar sinkron di semua device
+                if(window.db && window.appId) {
+                    try {
+                        const lockRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'app_status', 'quiz_access');
+                        await window.setDoc(lockRef, { unlocked: newStatus }, { merge: true });
+                    } catch (e) {
+                        console.error("Gagal update status kunci:", e);
+                    }
+                }
+
+                window.isQuizAccessible = newStatus;
                 updateAccessUI();
                 closeModal();
             } else {
-                alert('Kata Sandi Salah!');
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'absolute top-4 left-1/2 -translate-x-1/2 bg-rose-500 text-white px-4 py-2 rounded-xl text-[10px] font-bold uppercase';
+                errorMsg.innerText = 'PIN SALAH';
+                document.getElementById('password-modal').querySelector('div').appendChild(errorMsg);
+                setTimeout(() => errorMsg.remove(), 2000);
                 document.getElementById('pass-input').value = '';
             }
         }
@@ -367,7 +398,7 @@
             const icon = document.getElementById('lock-icon');
             const text = document.getElementById('lock-text');
 
-            if(isQuizAccessible) {
+            if(window.isQuizAccessible) {
                 btn.classList.replace('bg-slate-800', 'bg-emerald-600');
                 btn.classList.replace('border-slate-700', 'border-emerald-500');
                 text.innerText = 'Akses Soal Terbuka';
@@ -377,7 +408,7 @@
                 btn.classList.replace('bg-emerald-600', 'bg-slate-800');
                 btn.classList.replace('border-emerald-500', 'border-slate-700');
                 text.innerText = 'Akses Soal Terkunci';
-                icon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" /></svg>`;
+                icon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" /></svg>`;
                 icon.className = 'text-amber-400';
             }
         }
@@ -406,7 +437,9 @@
         }
 
         document.getElementById('pass-input').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') checkPass();
+            if (e.key === 'Enter') {
+                checkPass();
+            }
         });
     </script>
 </body>
