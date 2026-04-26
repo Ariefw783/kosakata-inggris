@@ -217,7 +217,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, query, addDoc, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, onSnapshot, setDoc, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBjD9b9J3UIH7cRq2IHPzM86biTR0yrBNQ",
@@ -233,12 +233,6 @@
         const db = getFirestore(app);
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 
-        // Expose to window for access in non-module scripts
-        window.db = db;
-        window.appId = appId;
-        window.setDoc = setDoc;
-        window.doc = doc;
-
         let user = null;
 
         signInAnonymously(auth).catch(err => console.error("Firebase Auth Error:", err));
@@ -247,19 +241,22 @@
             if (u) {
                 user = u;
                 loadScoresData();
-                syncQuizLock();
+                listenToLockState();
             }
         });
 
-        // Fitur Sinkronisasi Kunci Soal antar Device
-        function syncQuizLock() {
-            const lockRef = doc(db, 'artifacts', appId, 'public', 'data', 'app_status', 'quiz_access');
-            onSnapshot(lockRef, (docSnap) => {
-                if (docSnap.exists()) {
-                    window.isQuizAccessible = docSnap.data().unlocked === true;
-                    updateAccessUI();
+        // Listener untuk Status Kunci Global
+        function listenToLockState() {
+            const lockDoc = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'accessControl');
+            onSnapshot(lockDoc, (doc) => {
+                if (doc.exists()) {
+                    window.isQuizAccessible = doc.data().unlocked;
+                    window.updateAccessUI();
+                } else {
+                    window.isQuizAccessible = false;
+                    window.updateAccessUI();
                 }
-            });
+            }, (error) => console.error("Lock State Sync Error:", error));
         }
 
         window.loadScoresData = function() {
@@ -300,15 +297,25 @@
             });
         };
 
+        // Fungsi untuk mengupdate status kunci ke Firestore
+        window.toggleLockInDB = async (newState) => {
+            if (!user) return;
+            try {
+                const lockDoc = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'accessControl');
+                await setDoc(lockDoc, { unlocked: newState, updatedAt: serverTimestamp() });
+            } catch (e) {
+                console.error("Gagal update status kunci:", e);
+            }
+        };
+
         window.addEventListener('message', async (event) => {
-            // FIX INTRUKSI 1: Update tipe message agar menangkap data dari kosakata-inggris.html
+            // Menangani penyimpanan nilai termasuk detail jawaban salah
             if (event.data && (event.data.type === 'SAVE_SCORE' || event.data.type === 'SAVE_SCORE_ADVANCED')) {
                 if (!user) return;
                 try {
                     await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'kosakata-inggris'), {
                         score: event.data.score,
-                        wrongAnswers: event.data.wrongAnswers || [], // Menyimpan detail kesalahan
-                        studentName: event.data.studentName || "Kayla Zahra Safitri",
+                        wrongAnswers: event.data.wrongAnswers || [],
                         timestamp: serverTimestamp(),
                         uid: user.uid
                     });
@@ -320,7 +327,7 @@
     </script>
 
     <script>
-        // State Akses
+        // State Akses (sekarang disinkronkan via Firebase)
         window.isQuizAccessible = false;
 
         function updateClock() {
@@ -360,40 +367,26 @@
             document.getElementById('pass-input').value = '';
         }
 
-        // FIX INSTRUKSI 2 & 3: Password Persisten & Petunjuk Password
-        async function checkPass() {
+        /**
+         * PETUNJUK GANTI PASSWORD:
+         * Untuk mengubah kata sandi akses soal, ganti nilai string '1999' di bawah ini
+         * dengan angka atau PIN pilihan Anda yang baru (dalam tanda petik).
+         */
+        function checkPass() {
             const input = document.getElementById('pass-input').value;
+            const correctPIN = '1999'; // <-- Ganti PIN di sini
             
-            // PETUNJUK: Ganti angka '1999' di bawah ini untuk merubah kata sandi/PIN akses menu soal
-            const MASTER_PIN = '1999';
-
-            if(input === MASTER_PIN) {
-                const newStatus = !window.isQuizAccessible;
-                
-                // Simpan ke Firestore agar sinkron di semua device
-                if(window.db && window.appId) {
-                    try {
-                        const lockRef = window.doc(window.db, 'artifacts', window.appId, 'public', 'data', 'app_status', 'quiz_access');
-                        await window.setDoc(lockRef, { unlocked: newStatus }, { merge: true });
-                    } catch (e) {
-                        console.error("Gagal update status kunci:", e);
-                    }
-                }
-
-                window.isQuizAccessible = newStatus;
-                updateAccessUI();
+            if(input === correctPIN) {
+                const newState = !window.isQuizAccessible;
+                if (window.toggleLockInDB) window.toggleLockInDB(newState);
                 closeModal();
             } else {
-                const errorMsg = document.createElement('div');
-                errorMsg.className = 'absolute top-4 left-1/2 -translate-x-1/2 bg-rose-500 text-white px-4 py-2 rounded-xl text-[10px] font-bold uppercase';
-                errorMsg.innerText = 'PIN SALAH';
-                document.getElementById('password-modal').querySelector('div').appendChild(errorMsg);
-                setTimeout(() => errorMsg.remove(), 2000);
+                alert('PIN Salah!');
                 document.getElementById('pass-input').value = '';
             }
         }
 
-        function updateAccessUI() {
+        window.updateAccessUI = function() {
             const btn = document.getElementById('btn-lock-access');
             const icon = document.getElementById('lock-icon');
             const text = document.getElementById('lock-text');
