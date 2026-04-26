@@ -46,11 +46,11 @@
             </div>
             <div class="flex justify-between text-[11px] font-bold uppercase tracking-wider">
                 <span class="text-slate-400">Hari, Tanggal:</span>
-                <span class="text-slate-800">Jumat, 01 Mei 2026</span>
+                <span id="display-date" class="text-slate-800">Jumat, 01 Mei 2026</span>
             </div>
             <div class="flex justify-between text-[11px] font-bold uppercase tracking-wider">
                 <span class="text-slate-400">Durasi:</span>
-                <span class="text-indigo-600">10 Menit</span>
+                <span id="display-duration" class="text-indigo-600">10 Menit</span>
             </div>
             <div class="flex justify-between text-[11px] font-bold uppercase tracking-wider">
                 <span class="text-slate-400">Jumlah Soal:</span>
@@ -139,15 +139,21 @@
             { q: "Apa bahasa Inggris dari 'Bibi'?", a: "Aunt", o: ["Mother", "Sister", "Aunt", "Grandmother", "Cousin"] }
         ];
 
-        // PETUNJUK: Ganti angka 600 di bawah ini untuk merubah waktu pengerjaan (dalam satuan detik). 
-        // Contoh: 600 detik = 10 menit.
-        let timeLeft = 600; 
+        /**
+         * PETUNJUK GANTI WAKTU:
+         * Untuk mengubah durasi pengerjaan, ganti nilai angka '600' di bawah ini.
+         * Nilai ini dalam satuan DETIK (contoh: 600 detik = 10 menit).
+         */
+        let timeLeft = 600; // <-- Ganti Durasi (Detik) di sini
         
         let timerId = null;
         let score = 0;
         let answeredCount = 0;
         let wrongAnswersReport = [];
         const totalQuestions = questionsData.length;
+
+        // Sync display duration with timeLeft
+        document.getElementById('display-duration').innerText = Math.floor(timeLeft / 60) + " Menit";
 
         function startQuiz() {
             document.getElementById('start-screen').classList.add('hidden');
@@ -212,6 +218,7 @@
         }
 
         function forceFinish() {
+            alert("Waktu telah habis!");
             finishQuiz(true);
         }
 
@@ -257,7 +264,7 @@
                 `).join('');
             }
 
-            // INTEGRASI FIX: Kirim data dengan type yang dikenali index.html
+            // INTEGRASI: Kirim Score + Detail Kesalahan ke Parent (index.html)
             window.parent.postMessage({ 
                 type: 'SAVE_SCORE_ADVANCED', 
                 score: finalScoreVal,
