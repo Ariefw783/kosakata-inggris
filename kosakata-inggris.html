@@ -65,6 +65,7 @@
 
     <!-- Quiz Screen -->
     <div id="quiz-screen" class="hidden max-w-2xl mx-auto">
+        <!-- Sticky Header Quiz -->
         <div class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 pb-4 mb-6 flex justify-between items-center">
             <div>
                 <h2 class="text-sm font-black text-slate-800 uppercase">Kayla Zahra Safitri</h2>
@@ -76,10 +77,12 @@
             </div>
         </div>
 
+        <!-- Questions Container -->
         <form id="quiz-form" class="space-y-8 pb-24">
             <!-- Questions will be injected here -->
         </form>
 
+        <!-- Floating Footer Action -->
         <div class="fixed bottom-6 left-0 right-0 px-6">
             <div class="max-w-2xl mx-auto">
                 <button id="finish-btn" onclick="finishQuiz()" disabled class="w-full py-4 bg-slate-200 text-slate-400 rounded-2xl font-black uppercase tracking-[0.2em] transition-all cursor-not-allowed">
@@ -136,7 +139,10 @@
             { q: "Apa bahasa Inggris dari 'Bibi'?", a: "Aunt", o: ["Mother", "Sister", "Aunt", "Grandmother", "Cousin"] }
         ];
 
+        // PETUNJUK: Ganti angka 600 di bawah ini untuk merubah waktu pengerjaan (dalam satuan detik). 
+        // Contoh: 600 detik = 10 menit.
         let timeLeft = 600; 
+        
         let timerId = null;
         let score = 0;
         let answeredCount = 0;
@@ -206,7 +212,6 @@
         }
 
         function forceFinish() {
-            alert("Waktu telah habis!");
             finishQuiz(true);
         }
 
@@ -252,12 +257,12 @@
                 `).join('');
             }
 
-            // Perbaikan: Pastikan type adalah SAVE_SCORE atau SAVE_SCORE_ADVANCED yang ditangkap parent
+            // INTEGRASI FIX: Kirim data dengan type yang dikenali index.html
             window.parent.postMessage({ 
-                type: 'SAVE_SCORE', 
+                type: 'SAVE_SCORE_ADVANCED', 
                 score: finalScoreVal,
                 wrongAnswers: wrongAnswersReport,
-                date: "2026-05-01",
+                date: new Date().toISOString(),
                 studentName: "Kayla Zahra Safitri"
             }, '*');
         }
