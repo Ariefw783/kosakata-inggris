@@ -34,9 +34,9 @@
     <!-- Start Screen -->
     <div id="start-screen" class="max-w-xl mx-auto bg-white rounded-[2rem] p-8 shadow-sm border border-slate-100 text-center">
         <div class="mb-6">
-            <div class="w-20 h-20 bg-indigo-50 rounded-3xl flex items-center justify-center mx-auto text-3xl mb-4">🏫</div>
+            <div class="w-20 h-20 bg-indigo-50 rounded-3xl flex items-center justify-center mx-auto text-3xl mb-4">🏠</div>
             <h1 class="text-2xl font-black text-slate-800 uppercase tracking-tight">Ulangan Kosakata</h1>
-            <p class="text-slate-400 text-xs font-bold mt-1 tracking-widest">INGGRIS - INDONESIA (COLORS, TOOLS & SCHOOL)</p>
+            <p class="text-slate-400 text-xs font-bold mt-1 tracking-widest">INGGRIS - INDONESIA (COMPREHENSIVE)</p>
         </div>
 
         <div class="bg-slate-50 rounded-2xl p-6 mb-8 text-left space-y-3">
@@ -46,7 +46,7 @@
             </div>
             <div class="flex justify-between text-[11px] font-bold uppercase tracking-wider">
                 <span class="text-slate-400">Hari, Tanggal:</span>
-                <span class="text-slate-800">Jumat, 24 April 2026</span>
+                <span class="text-slate-800">Jumat, 01 Mei 2026</span>
             </div>
             <div class="flex justify-between text-[11px] font-bold uppercase tracking-wider">
                 <span class="text-slate-400">Durasi:</span>
@@ -54,7 +54,7 @@
             </div>
             <div class="flex justify-between text-[11px] font-bold uppercase tracking-wider">
                 <span class="text-slate-400">Jumlah Soal:</span>
-                <span class="text-slate-800">19 Pilihan Ganda</span>
+                <span class="text-slate-800">24 Pilihan Ganda</span>
             </div>
         </div>
 
@@ -69,11 +69,11 @@
         <div class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 pb-4 mb-6 flex justify-between items-center">
             <div>
                 <h2 class="text-sm font-black text-slate-800 uppercase">Kayla Zahra Safitri</h2>
-                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">Vocabulary: School Life</p>
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">Vocabulary Mastery</p>
             </div>
             <div class="text-right">
                 <div id="timer" class="text-xl font-black font-mono text-indigo-600">10:00</div>
-                <div id="progress-text" class="text-[10px] text-slate-400 font-bold uppercase">0/19 Terjawab</div>
+                <div id="progress-text" class="text-[10px] text-slate-400 font-bold uppercase">0/24 Terjawab</div>
             </div>
         </div>
 
@@ -96,17 +96,24 @@
     <div id="result-screen" class="hidden max-w-xl mx-auto text-center py-12">
         <div id="result-icon" class="w-24 h-24 rounded-[2.5rem] flex items-center justify-center mx-auto text-4xl mb-6 shadow-xl"></div>
         <h2 id="result-status" class="text-2xl font-black text-slate-800 uppercase tracking-tight mb-2"></h2>
-        <p class="text-slate-400 text-sm mb-8">Nilai kamu telah berhasil disimpan ke database.</p>
+        <p class="text-slate-400 text-sm mb-8">Nilai dan laporan kesalahan kamu telah berhasil dikirim.</p>
         
-        <div class="bg-white rounded-[2rem] p-10 border border-slate-100 shadow-sm inline-block min-w-[200px]">
+        <div class="bg-white rounded-[2rem] p-10 border border-slate-100 shadow-sm inline-block min-w-[200px] mb-8">
             <span class="block text-slate-400 text-[10px] font-black uppercase tracking-[0.3em] mb-2">Skor Akhir</span>
             <span id="final-score" class="text-7xl font-black text-indigo-600">0</span>
+        </div>
+
+        <div id="review-container" class="text-left max-w-md mx-auto hidden">
+            <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Review Kesalahan</h3>
+            <div id="wrong-answers-list" class="space-y-3">
+                <!-- Wrong answers will be listed here -->
+            </div>
         </div>
     </div>
 
     <script>
         const questionsData = [
-            { q: "Apa arti dari kosakata 'brown'?", a: "Cokelat", o: ["Hitam", "Biru", "Cokelat", "Putih", "Ungu"] },
+            { q: "Apa arti dari kosakata 'brown'?", a: "Cokelat", o: ["Hitam", "Biru", "Cokelat", "Putih", "Merah"] },
             { q: "Apa arti dari kosakata 'orange'?", a: "Oranye", o: ["Kuning", "Merah", "Hijau", "Oranye", "Biru"] },
             { q: "Apa bahasa Inggris dari 'Hijau'?", a: "Green", o: ["Blue", "Yellow", "Green", "Black", "White"] },
             { q: "Apa arti dari kosakata 'blue'?", a: "Biru", o: ["Merah", "Kuning", "Biru", "Ungu", "Putih"] },
@@ -119,18 +126,24 @@
             { q: "Apa arti dari kosakata 'pen'?", a: "Pena", o: ["Pensil", "Buku", "Pena", "Tas", "Penghapus"] },
             { q: "Apa arti dari kosakata 'pencil'?", a: "Pensil", o: ["Pena", "Pensil", "Penggaris", "Buku", "Meja"] },
             { q: "Apa bahasa Inggris dari 'Penghapus'?", a: "Eraser", o: ["Ruler", "Pencil", "Eraser", "Bag", "Book"] },
-            { q: "Apa arti dari kosakata 'bag'?", a: "Tas", o: ["Buku", "Tas", "Kotak Pensil", "Meja", "Kursi"] },
-            { q: "Apa bahasa Inggris dari 'Kursi'?", a: "Chair", o: ["Table", "Chair", "Desk", "Door", "Window"] },
-            { q: "Apa arti dari kosakata 'table'?", a: "Meja", o: ["Kursi", "Meja", "Papan Tulis", "Lantai", "Dinding"] },
-            { q: "Apa bahasa Inggris dari 'Guru'?", a: "Teacher", o: ["Student", "Principal", "Teacher", "Janitor", "Officer"] },
-            { q: "Apa arti dari kosakata 'student'?", a: "Murid/Siswa", o: ["Guru", "Kepala Sekolah", "Murid/Siswa", "Satpam", "Teman"] },
-            { q: "Apa bahasa Inggris dari 'Ruang Kelas'?", a: "Classroom", o: ["Office", "Library", "Canteen", "Classroom", "Hall"] }
+            { q: "Apa bahasa Inggris dari 'Tas'?", a: "Bag", o: ["Book", "Bag", "Desk", "Chair", "Pencil"] },
+            { q: "Apa arti dari kosakata 'Chair'?", a: "Kursi", o: ["Meja", "Kursi", "Lemari", "Pintu", "Jendela"] },
+            { q: "Apa bahasa Inggris dari 'Meja'?", a: "Table", o: ["Chair", "Desk", "Table", "Wall", "Floor"] },
+            { q: "Apa arti dari kosakata 'Guru'?", a: "Teacher", o: ["Student", "Doctor", "Teacher", "Pilot", "Nurse"] },
+            { q: "Apa bahasa Inggris dari 'Murid'?", a: "Student", o: ["Teacher", "Principal", "Student", "Library", "Office"] },
+            { q: "Apa arti dari kosakata 'Ruang Kelas'?", a: "Classroom", o: ["Canteen", "Library", "Classroom", "Hallway", "Garden"] },
+            { q: "Apa bahasa Inggris dari 'Bayi'?", a: "Baby", o: ["Child", "Baby", "Adult", "Teenager", "Elder"] },
+            { q: "Apa arti dari kosakata 'Keluarga'?", a: "Family", o: ["Friends", "Neighbors", "Family", "Community", "Society"] },
+            { q: "Apa bahasa Inggris dari 'Nasi'?", a: "Rice", o: ["Bread", "Noodle", "Rice", "Milk", "Cake"] },
+            { q: "Apa arti dari kosakata 'Paman'?", a: "Uncle", o: ["Father", "Uncle", "Aunt", "Grandfather", "Brother"] },
+            { q: "Apa bahasa Inggris dari 'Bibi'?", a: "Aunt", o: ["Mother", "Sister", "Aunt", "Grandmother", "Cousin"] }
         ];
 
-        let timeLeft = 600; // 10 minutes
+        let timeLeft = 600; 
         let timerId = null;
         let score = 0;
         let answeredCount = 0;
+        let wrongAnswersReport = [];
         const totalQuestions = questionsData.length;
 
         function startQuiz() {
@@ -143,9 +156,9 @@
         function renderQuestions() {
             const form = document.getElementById('quiz-form');
             form.innerHTML = questionsData.map((item, index) => `
-                <div class="question-block fade-in" style="animation-delay: ${index * 0.1}s">
+                <div class="question-block fade-in" style="animation-delay: ${index * 0.05}s">
                     <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
-                        <p class="text-[10px] font-black text-slate-400 mb-3 uppercase tracking-widest">Pertanyaan ${index + 1}</p>
+                        <p class="text-[10px] font-black text-slate-400 mb-2 uppercase tracking-widest">Pertanyaan ${index + 1}</p>
                         <h3 class="text-sm font-bold text-slate-800 mb-4">${item.q}</h3>
                         <div class="grid grid-cols-1 gap-2">
                             ${item.o.map((opt, i) => {
@@ -184,12 +197,10 @@
                 const mins = Math.floor(timeLeft / 60);
                 const secs = timeLeft % 60;
                 document.getElementById('timer').innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-
                 if (timeLeft <= 60) {
-                    document.getElementById('timer').classList.remove('text-indigo-600');
-                    document.getElementById('timer').classList.add('text-rose-500', 'animate-pulse');
+                    document.getElementById('timer').classList.replace('text-indigo-600', 'text-rose-500');
+                    document.getElementById('timer').classList.add('animate-pulse');
                 }
-
                 if (timeLeft <= 0) {
                     clearInterval(timerId);
                     forceFinish();
@@ -198,7 +209,7 @@
         }
 
         function forceFinish() {
-            alert("Waktu telah habis! Skor akan segera dihitung.");
+            alert("Waktu telah habis!");
             finishQuiz(true);
         }
 
@@ -206,7 +217,7 @@
             if (!isForced && answeredCount < totalQuestions) return;
 
             clearInterval(timerId);
-            calculateScore();
+            calculateResults();
 
             document.getElementById('quiz-screen').classList.add('hidden');
             document.getElementById('result-screen').classList.remove('hidden');
@@ -214,14 +225,15 @@
             const scoreDisplay = document.getElementById('final-score');
             const statusDisplay = document.getElementById('result-status');
             const iconDisplay = document.getElementById('result-icon');
+            const finalScoreVal = Math.round(score);
             
-            scoreDisplay.innerText = Math.round(score);
+            scoreDisplay.innerText = finalScoreVal;
 
-            if (score >= 80) {
+            if (finalScoreVal >= 80) {
                 statusDisplay.innerText = "Luar Biasa!";
                 iconDisplay.innerText = "🏆";
                 iconDisplay.className = "w-24 h-24 rounded-[2.5rem] flex items-center justify-center mx-auto text-4xl mb-6 shadow-xl bg-emerald-50 text-emerald-500";
-            } else if (score >= 60) {
+            } else if (finalScoreVal >= 60) {
                 statusDisplay.innerText = "Bagus!";
                 iconDisplay.innerText = "⭐";
                 iconDisplay.className = "w-24 h-24 rounded-[2.5rem] flex items-center justify-center mx-auto text-4xl mb-6 shadow-xl bg-amber-50 text-amber-500";
@@ -231,19 +243,44 @@
                 iconDisplay.className = "w-24 h-24 rounded-[2.5rem] flex items-center justify-center mx-auto text-4xl mb-6 shadow-xl bg-slate-50 text-slate-500";
             }
 
+            // Show Review if there are wrong answers
+            if (wrongAnswersReport.length > 0) {
+                document.getElementById('review-container').classList.remove('hidden');
+                const list = document.getElementById('wrong-answers-list');
+                list.innerHTML = wrongAnswersReport.map(item => `
+                    <div class="p-4 rounded-xl bg-white border border-slate-100 shadow-sm text-xs">
+                        <p class="font-bold text-slate-800 mb-1">${item.question}</p>
+                        <p class="text-rose-500 mb-0.5">Jawabanmu: ${item.userAnswer || '(Tidak dijawab)'}</p>
+                        <p class="text-emerald-600 font-bold">Pembenaran: ${item.correctAnswer}</p>
+                    </div>
+                `).join('');
+            }
+
+            // INTEGRASI: Kirim Score + Detail Kesalahan
             window.parent.postMessage({ 
-                type: 'SAVE_SCORE', 
-                score: Math.round(score) 
+                type: 'SAVE_SCORE_ADVANCED', 
+                score: finalScoreVal,
+                wrongAnswers: wrongAnswersReport,
+                date: "2026-05-01",
+                studentName: "Kayla Zahra Safitri"
             }, '*');
         }
 
-        function calculateScore() {
+        function calculateResults() {
             const formData = new FormData(document.getElementById('quiz-form'));
             let correctCount = 0;
+            wrongAnswersReport = [];
 
             questionsData.forEach((item, index) => {
-                if (formData.get(`q${index}`) === item.a) {
+                const userChoice = formData.get(`q${index}`);
+                if (userChoice === item.a) {
                     correctCount++;
+                } else {
+                    wrongAnswersReport.push({
+                        question: item.q,
+                        userAnswer: userChoice,
+                        correctAnswer: item.a
+                    });
                 }
             });
 
