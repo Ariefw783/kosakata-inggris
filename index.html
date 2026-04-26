@@ -386,7 +386,7 @@
          */
         function checkPass() {
             const input = document.getElementById('pass-input').value;
-            const PIN_ADMIN = '1999'; // GANTI PIN DI SINI
+            const PIN_ADMIN = '****'; // GANTI PIN DI SINI
             if(input === PIN_ADMIN) {
                 if (window.toggleLockInDB) window.toggleLockInDB(!window.isQuizAccessible);
                 closeModal();
