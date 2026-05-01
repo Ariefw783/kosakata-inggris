@@ -11,28 +11,32 @@
             font-family: 'Plus Jakarta Sans', sans-serif; 
             background-color: transparent;
         }
-        .option-label:hover { background-color: #f1f5f9; }
-        input[type="radio"]:checked + .option-content { border-color: #4f46e5; background-color: #eef2ff; }
-        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: translateX(0); } }
+        .option-label:hover {
+            background-color: #f1f5f9;
+        }
+        input[type="radio"]:checked + .option-content {
+            border-color: #4f46e5;
+            background-color: #eef2ff;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .slide-hidden { display: none; }
     </style>
 </head>
 <body class="p-4 md:p-6">
 
-    <div id="limit-overlay" class="hidden max-w-xl mx-auto bg-white rounded-[2rem] p-10 shadow-sm border border-slate-100 text-center fade-in">
-        <div class="w-20 h-20 bg-rose-50 rounded-3xl flex items-center justify-center mx-auto text-3xl mb-6">⏳</div>
-        <h2 class="text-2xl font-black text-slate-800 uppercase tracking-tight">Batas Harian Tercapai</h2>
-        <p class="text-slate-400 text-sm mt-4 leading-relaxed">Kamu sudah mengerjakan ulangan hari ini. Silakan kembali besok untuk melatih hafalanmu lagi!</p>
-        <div class="mt-8 pt-8 border-t border-slate-100 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-            Hanya 1x Pengerjaan per Hari
-        </div>
-    </div>
-
+    <!-- Start Screen -->
     <div id="start-screen" class="max-w-xl mx-auto bg-white rounded-[2rem] p-8 shadow-sm border border-slate-100 text-center">
         <div class="mb-6">
-            <div class="w-20 h-20 bg-indigo-50 rounded-3xl flex items-center justify-center mx-auto text-3xl mb-4">🏠</div>
+            <div class="w-20 h-20 bg-indigo-50 rounded-3xl flex items-center justify-center mx-auto text-3xl mb-4">📝</div>
             <h1 class="text-2xl font-black text-slate-800 uppercase tracking-tight">Ulangan Kosakata</h1>
-            <p class="text-slate-400 text-xs font-bold mt-1 tracking-widest">INGGRIS - INDONESIA (COMPREHENSIVE)</p>
+            <p class="text-slate-400 text-xs font-bold mt-1 tracking-widest">INGGRIS - INDONESIA (SLIDE VERSION)</p>
         </div>
 
         <div class="bg-slate-50 rounded-2xl p-6 mb-8 text-left space-y-3">
@@ -41,16 +45,16 @@
                 <span class="text-slate-800">Kayla Zahra Safitri</span>
             </div>
             <div class="flex justify-between text-[11px] font-bold uppercase tracking-wider">
-                <span class="text-slate-400">Tanggal:</span>
-                <span class="text-slate-800">jumat 01 April 2026</span>
+                <span class="text-slate-400">Hari, Tanggal:</span>
+                <span class="text-slate-800">Jumat, 08 Mei 2026</span>
             </div>
             <div class="flex justify-between text-[11px] font-bold uppercase tracking-wider">
                 <span class="text-slate-400">Durasi:</span>
-                <span id="display-duration" class="text-indigo-600">10 Menit</span>
+                <span class="text-indigo-600">10 Menit</span>
             </div>
             <div class="flex justify-between text-[11px] font-bold uppercase tracking-wider">
                 <span class="text-slate-400">Jumlah Soal:</span>
-                <span class="text-slate-800">24 Pilihan Ganda</span>
+                <span class="text-slate-800">29 Pilihan Ganda</span>
             </div>
         </div>
 
@@ -59,172 +63,170 @@
         </button>
     </div>
 
+    <!-- Quiz Screen -->
     <div id="quiz-screen" class="hidden max-w-2xl mx-auto">
+        <!-- Sticky Header Quiz -->
         <div class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-100 pb-4 mb-6 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <button id="btn-back" onclick="prevQuestion()" class="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-all">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
-                </button>
-                <div>
-                    <h2 class="text-sm font-black text-slate-800 uppercase">Kayla Zahra Safitri</h2>
-                    <p id="current-number-text" class="text-[10px] text-indigo-600 font-bold uppercase tracking-tighter">Soal 1 dari 24</p>
+            <div>
+                <h2 class="text-sm font-black text-slate-800 uppercase">Kayla Zahra Safitri</h2>
+                <div class="flex items-center gap-2">
+                    <div class="w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div id="progress-bar" class="h-full bg-indigo-600 transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                    <p id="progress-text" class="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">Soal 1/29</p>
                 </div>
             </div>
             <div class="text-right">
                 <div id="timer" class="text-xl font-black font-mono text-indigo-600">10:00</div>
-                <div id="progress-text" class="text-[10px] text-slate-400 font-bold uppercase">0/24 Terjawab</div>
             </div>
         </div>
 
-        <form id="quiz-form" class="pb-24">
-            <div id="question-container" class="fade-in"></div>
+        <!-- Questions Container (Slide Format) -->
+        <form id="quiz-form" class="relative min-h-[400px]">
+            <!-- Slides injected here -->
         </form>
 
+        <!-- Navigation Buttons -->
         <div class="fixed bottom-6 left-0 right-0 px-6">
-            <div class="max-w-2xl mx-auto">
-                <button id="finish-btn" onclick="finishQuiz()" disabled class="w-full py-4 bg-slate-200 text-slate-400 rounded-2xl font-black uppercase tracking-[0.2em] transition-all cursor-not-allowed">
-                    Selesai & Kirim Nilai
+            <div class="max-w-2xl mx-auto flex gap-3">
+                <button id="prev-btn" onclick="prevSlide()" class="hidden flex-1 py-4 bg-white border border-slate-200 text-slate-400 rounded-2xl font-black uppercase tracking-[0.2em] hover:bg-slate-50 transition-all">
+                    Kembali
+                </button>
+                <button id="finish-btn" onclick="finishQuiz()" class="hidden flex-[2] py-4 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-[0.2em] shadow-lg shadow-indigo-100 transition-all">
+                    Selesai & Kirim
                 </button>
             </div>
         </div>
     </div>
 
+    <!-- Result Screen -->
     <div id="result-screen" class="hidden max-w-xl mx-auto text-center py-12">
         <div id="result-icon" class="w-24 h-24 rounded-[2.5rem] flex items-center justify-center mx-auto text-4xl mb-6 shadow-xl"></div>
         <h2 id="result-status" class="text-2xl font-black text-slate-800 uppercase tracking-tight mb-2"></h2>
-        <div class="bg-white rounded-[2rem] p-10 border border-slate-100 shadow-sm inline-block min-w-[200px] mb-8">
+        <p class="text-slate-400 text-sm mb-8">Hasil evaluasi belajar kamu telah terekam.</p>
+        
+        <div class="bg-white rounded-[2rem] p-10 border border-slate-100 shadow-sm inline-block min-w-[200px] mb-10">
             <span class="block text-slate-400 text-[10px] font-black uppercase tracking-[0.3em] mb-2">Skor Akhir</span>
             <span id="final-score" class="text-7xl font-black text-indigo-600">0</span>
+        </div>
+
+        <div id="review-container" class="text-left max-w-md mx-auto hidden">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest">Laporan Perbaikan</h3>
+                <span id="wrong-count" class="bg-rose-50 text-rose-500 text-[10px] px-2 py-1 rounded-lg font-bold"></span>
+            </div>
+            <div id="wrong-answers-list" class="space-y-3"></div>
         </div>
     </div>
 
     <script>
         const questionsData = [
-            { q: "Apa arti dari kosakata 'brown'?", a: "Cokelat", o: ["Hitam", "Biru", "Cokelat", "Putih", "Merah"] },
-            { q: "Apa arti dari kosakata 'orange'?", a: "Oranye", o: ["Kuning", "Merah", "Hijau", "Oranye", "Biru"] },
+            { q: "Apa arti dari 'brown'?", a: "Cokelat", o: ["Hitam", "Biru", "Cokelat", "Putih", "Merah"] },
+            { q: "Apa arti dari 'orange'?", a: "Oranye", o: ["Kuning", "Merah", "Hijau", "Oranye", "Biru"] },
             { q: "Apa bahasa Inggris dari 'Hijau'?", a: "Green", o: ["Blue", "Yellow", "Green", "Black", "White"] },
-            { q: "Apa arti dari kosakata 'blue'?", a: "Biru", o: ["Merah", "Kuning", "Biru", "Ungu", "Putih"] },
+            { q: "Apa arti dari 'blue'?", a: "Biru", o: ["Merah", "Kuning", "Biru", "Ungu", "Putih"] },
             { q: "Apa bahasa Inggris dari 'Putih'?", a: "White", o: ["Grey", "White", "Black", "Brown", "Pink"] },
-            { q: "Apa arti dari kosakata 'black'?", a: "Hitam", o: ["Putih", "Abu-abu", "Hitam", "Cokelat", "Hijau"] },
-            { q: "Apa arti dari kosakata 'yellow'?", a: "Kuning", o: ["Merah Muda", "Biru", "Kuning", "Jingga", "Putih"] },
+            { q: "Apa arti dari 'black'?", a: "Hitam", o: ["Putih", "Abu-abu", "Hitam", "Cokelat", "Hijau"] },
+            { q: "Apa arti dari 'yellow'?", a: "Kuning", o: ["Merah Muda", "Biru", "Kuning", "Jingga", "Putih"] },
             { q: "Apa bahasa Inggris dari 'Ungu'?", a: "Purple", o: ["Purple", "Pink", "Green", "Blue", "Red"] },
-            { q: "Apa arti dari kosakata 'pink'?", a: "Merah Muda", o: ["Merah Muda", "Merah", "Ungu", "Biru", "Kuning"] },
+            { q: "Apa arti dari 'pink'?", a: "Merah Muda", o: ["Merah Muda", "Merah", "Ungu", "Biru", "Kuning"] },
             { q: "Apa bahasa Inggris dari 'Buku'?", a: "Book", o: ["Bag", "Pen", "Book", "Pencil", "Eraser"] },
-            { q: "Apa arti dari kosakata 'pen'?", a: "Pena", o: ["Pensil", "Buku", "Pena", "Tas", "Penghapus"] },
-            { q: "Apa arti dari kosakata 'pencil'?", a: "Pensil", o: ["Pena", "Pensil", "Penggaris", "Buku", "Meja"] },
+            { q: "Apa arti dari 'pen'?", a: "Pena", o: ["Pensil", "Buku", "Pena", "Tas", "Penghapus"] },
+            { q: "Apa arti dari 'pencil'?", a: "Pensil", o: ["Pena", "Pensil", "Penggaris", "Buku", "Meja"] },
             { q: "Apa bahasa Inggris dari 'Penghapus'?", a: "Eraser", o: ["Ruler", "Pencil", "Eraser", "Bag", "Book"] },
             { q: "Apa bahasa Inggris dari 'Tas'?", a: "Bag", o: ["Book", "Bag", "Desk", "Chair", "Pencil"] },
             { q: "Apa arti dari kosakata 'Chair'?", a: "Kursi", o: ["Meja", "Kursi", "Lemari", "Pintu", "Jendela"] },
             { q: "Apa bahasa Inggris dari 'Meja'?", a: "Table", o: ["Chair", "Desk", "Table", "Wall", "Floor"] },
             { q: "Apa arti dari kosakata 'Guru'?", a: "Teacher", o: ["Student", "Doctor", "Teacher", "Pilot", "Nurse"] },
             { q: "Apa bahasa Inggris dari 'Murid'?", a: "Student", o: ["Teacher", "Principal", "Student", "Library", "Office"] },
-            { q: "Apa arti dari kosakata 'Ruang Kelas'?", a: "Classroom", o: ["Canteen", "Library", "Classroom", "Hallway", "Garden"] },
+            { q: "Apa arti dari 'Ruang Kelas'?", a: "Classroom", o: ["Canteen", "Library", "Classroom", "Hallway", "Garden"] },
             { q: "Apa bahasa Inggris dari 'Bayi'?", a: "Baby", o: ["Child", "Baby", "Adult", "Teenager", "Elder"] },
-            { q: "Apa arti dari kosakata 'Keluarga'?", a: "Family", o: ["Friends", "Neighbors", "Family", "Community", "Society"] },
+            { q: "Apa arti dari 'Keluarga'?", a: "Family", o: ["Friends", "Neighbors", "Family", "Community", "Society"] },
             { q: "Apa bahasa Inggris dari 'Nasi'?", a: "Rice", o: ["Bread", "Noodle", "Rice", "Milk", "Cake"] },
-            { q: "Apa arti dari kosakata 'Paman'?", a: "Uncle", o: ["Father", "Uncle", "Aunt", "Grandfather", "Brother"] },
-            { q: "Apa bahasa Inggris dari 'Bibi'?", a: "Aunt", o: ["Mother", "Sister", "Aunt", "Grandmother", "Cousin"] }
+            { q: "Apa arti dari 'Paman'?", a: "Uncle", o: ["Father", "Uncle", "Aunt", "Grandfather", "Brother"] },
+            { q: "Apa bahasa Inggris dari 'Bibi'?", a: "Aunt", o: ["Mother", "Sister", "Aunt", "Grandmother", "Cousin"] },
+            { q: "Apa bahasa Inggris dari 'Roti'?", a: "Bread", o: ["Rice", "Bread", "Cake", "Egg", "Milk"] },
+            { q: "Apa arti dari 'Susu'?", a: "Milk", o: ["Coffee", "Tea", "Milk", "Water", "Juice"] },
+            { q: "Apa bahasa Inggris dari 'Telur'?", a: "Egg", o: ["Meat", "Egg", "Fish", "Rice", "Chicken"] },
+            { q: "Apa arti dari 'Apel'?", a: "Apple", o: ["Orange", "Banana", "Apple", "Grape", "Mango"] },
+            { q: "Apa bahasa Inggris dari 'Pisang'?", a: "Banana", o: ["Apple", "Papaya", "Watermelon", "Banana", "Grape"] }
         ];
 
+        let currentSlide = 0;
         let timeLeft = 600; 
         let timerId = null;
         let score = 0;
         let wrongAnswersReport = [];
-        let currentQuestionIdx = 0;
-        let userAnswers = {};
-
-        window.onpopstate = function(event) {
-            if (event.state && event.state.index !== undefined) {
-                currentQuestionIdx = event.state.index;
-                renderCurrentQuestion();
-            } else if (document.getElementById('quiz-screen').classList.contains('hidden') === false) {
-                location.reload();
-            }
-        };
-
-        window.onload = () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const isAdmin = urlParams.get('admin') === "true";
-            const today = new Date().toLocaleDateString('id-ID');
-            const lastAttempt = localStorage.getItem('last_quiz_date');
-
-            if (lastAttempt === today && !isAdmin) {
-                document.getElementById('start-screen').classList.add('hidden');
-                document.getElementById('limit-overlay').classList.remove('hidden');
-            }
-            document.getElementById('display-duration').innerText = Math.floor(timeLeft / 60) + " Menit";
-        };
+        const totalQuestions = questionsData.length;
 
         function startQuiz() {
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('quiz-screen').classList.remove('hidden');
-            currentQuestionIdx = 0;
-            history.pushState({index: 0}, "");
-            renderCurrentQuestion();
+            renderSlides();
+            showSlide(0);
             startTimer();
         }
 
-        function renderCurrentQuestion() {
-            const item = questionsData[currentQuestionIdx];
-            const container = document.getElementById('question-container');
-            
-            document.getElementById('current-number-text').innerText = `Soal ${currentQuestionIdx + 1} dari 24`;
-            document.getElementById('btn-back').style.visibility = currentQuestionIdx === 0 ? 'hidden' : 'visible';
-
-            container.innerHTML = `
-                <div class="question-block bg-white p-6 rounded-2xl border border-slate-100 shadow-sm fade-in">
-                    <p class="text-[10px] font-black text-slate-400 mb-2 uppercase tracking-widest">Pertanyaan ${currentQuestionIdx + 1}</p>
-                    <h3 class="text-sm font-bold text-slate-800 mb-6">${item.q}</h3>
-                    <div class="grid grid-cols-1 gap-3">
-                        ${item.o.map((opt, i) => `
-                            <label class="option-label cursor-pointer">
-                                <input type="radio" name="q${currentQuestionIdx}" value="${opt}" class="hidden" 
-                                    ${userAnswers[currentQuestionIdx] === opt ? 'checked' : ''} 
-                                    onchange="handleAnswerSelection('${opt}')">
-                                <div class="option-content border border-slate-200 rounded-xl p-4 flex items-center gap-3 transition-all">
-                                    <span class="w-7 h-7 rounded-lg bg-slate-50 flex items-center justify-center text-[10px] font-black text-slate-400 border border-slate-100 uppercase">${String.fromCharCode(97 + i)}</span>
-                                    <span class="text-xs font-semibold text-slate-600">${opt}</span>
-                                </div>
-                            </label>
-                        `).join('')}
+        function renderSlides() {
+            const form = document.getElementById('quiz-form');
+            form.innerHTML = questionsData.map((item, index) => `
+                <div id="slide-${index}" class="slide-hidden">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm fade-in">
+                        <p class="text-[10px] font-black text-slate-400 mb-2 uppercase tracking-widest">Pertanyaan ${index + 1}</p>
+                        <h3 class="text-sm font-bold text-slate-800 mb-6">${item.q}</h3>
+                        <div class="grid grid-cols-1 gap-3">
+                            ${item.o.map((opt, i) => {
+                                const char = String.fromCharCode(97 + i);
+                                return `
+                                    <label class="option-label relative cursor-pointer">
+                                        <input type="radio" name="q${index}" value="${opt}" class="hidden" onchange="autoNext(${index})">
+                                        <div class="option-content border border-slate-200 rounded-xl p-4 flex items-center gap-3 transition-all">
+                                            <span class="w-6 h-6 rounded-lg bg-slate-50 flex items-center justify-center text-[10px] font-black text-slate-400 border border-slate-100 uppercase">${char}</span>
+                                            <span class="text-xs font-semibold text-slate-600">${opt}</span>
+                                        </div>
+                                    </label>
+                                `;
+                            }).join('')}
+                        </div>
                     </div>
                 </div>
-            `;
+            `).join('');
         }
 
-        function handleAnswerSelection(val) {
-            userAnswers[currentQuestionIdx] = val;
-            updateProgressDisplay();
+        function showSlide(index) {
+            document.querySelectorAll('[id^="slide-"]').forEach(s => s.classList.add('slide-hidden'));
+            document.getElementById(`slide-${index}`).classList.remove('slide-hidden');
             
-            setTimeout(() => {
-                if (currentQuestionIdx < 23) {
-                    nextQuestion();
-                }
-            }, 400);
+            // Progress Update
+            const prog = ((index + 1) / totalQuestions) * 100;
+            document.getElementById('progress-bar').style.width = `${prog}%`;
+            document.getElementById('progress-text').innerText = `Soal ${index + 1}/${totalQuestions}`;
+
+            // Buttons Visibility
+            document.getElementById('prev-btn').classList.toggle('hidden', index === 0);
+            
+            // Show Finish button on last slide if answered
+            const isLast = index === totalQuestions - 1;
+            const finishBtn = document.getElementById('finish-btn');
+            finishBtn.classList.toggle('hidden', !isLast);
+            
+            currentSlide = index;
         }
 
-        function nextQuestion() {
-            if (currentQuestionIdx < 23) {
-                currentQuestionIdx++;
-                history.pushState({index: currentQuestionIdx}, "");
-                renderCurrentQuestion();
+        function autoNext(index) {
+            if (index < totalQuestions - 1) {
+                setTimeout(() => {
+                    showSlide(index + 1);
+                }, 300); // Small delay so user sees selection
+            } else {
+                // If it's the last question, enable finish button style
+                document.getElementById('finish-btn').classList.remove('hidden');
             }
         }
 
-        function prevQuestion() {
-            if (currentQuestionIdx > 0) {
-                history.back();
-            }
-        }
-
-        function updateProgressDisplay() {
-            const count = Object.keys(userAnswers).length;
-            document.getElementById('progress-text').innerText = `${count}/24 Terjawab`;
-            
-            if (count === 24) {
-                const btn = document.getElementById('finish-btn');
-                btn.disabled = false;
-                btn.className = "w-full py-4 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-[0.2em] shadow-lg cursor-pointer";
+        function prevSlide() {
+            if (currentSlide > 0) {
+                showSlide(currentSlide - 1);
             }
         }
 
@@ -234,37 +236,90 @@
                 const mins = Math.floor(timeLeft / 60);
                 const secs = timeLeft % 60;
                 document.getElementById('timer').innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-                if (timeLeft <= 0) { clearInterval(timerId); finishQuiz(); }
+                if (timeLeft <= 60) {
+                    document.getElementById('timer').classList.replace('text-indigo-600', 'text-rose-500');
+                    document.getElementById('timer').classList.add('animate-pulse');
+                }
+                if (timeLeft <= 0) {
+                    clearInterval(timerId);
+                    finishQuiz(true);
+                }
             }, 1000);
         }
 
-        function finishQuiz() {
+        function finishQuiz(isForced = false) {
             clearInterval(timerId);
             calculateResults();
-            
-            const today = new Date().toLocaleDateString('id-ID');
-            localStorage.setItem('last_quiz_date', today);
 
             document.getElementById('quiz-screen').classList.add('hidden');
             document.getElementById('result-screen').classList.remove('hidden');
-            document.getElementById('final-score').innerText = Math.round(score);
 
+            const scoreDisplay = document.getElementById('final-score');
+            const statusDisplay = document.getElementById('result-status');
+            const iconDisplay = document.getElementById('result-icon');
+            const finalScoreVal = Math.round(score);
+            
+            scoreDisplay.innerText = finalScoreVal;
+
+            if (finalScoreVal >= 80) {
+                statusDisplay.innerText = "Luar Biasa!";
+                iconDisplay.innerText = "🏆";
+                iconDisplay.className = "w-24 h-24 rounded-[2.5rem] flex items-center justify-center mx-auto text-4xl mb-6 shadow-xl bg-emerald-50 text-emerald-500";
+            } else if (finalScoreVal >= 60) {
+                statusDisplay.innerText = "Bagus!";
+                iconDisplay.innerText = "⭐";
+                iconDisplay.className = "w-24 h-24 rounded-[2.5rem] flex items-center justify-center mx-auto text-4xl mb-6 shadow-xl bg-amber-50 text-amber-500";
+            } else {
+                statusDisplay.innerText = "Tetap Semangat!";
+                iconDisplay.innerText = "💪";
+                iconDisplay.className = "w-24 h-24 rounded-[2.5rem] flex items-center justify-center mx-auto text-4xl mb-6 shadow-xl bg-slate-50 text-slate-500";
+            }
+
+            if (wrongAnswersReport.length > 0) {
+                document.getElementById('review-container').classList.remove('hidden');
+                document.getElementById('wrong-count').innerText = `${wrongAnswersReport.length} Salah`;
+                const list = document.getElementById('wrong-answers-list');
+                list.innerHTML = wrongAnswersReport.map(item => `
+                    <div class="p-4 rounded-xl bg-white border border-slate-100 shadow-sm text-xs">
+                        <p class="font-bold text-slate-800 mb-1">${item.question}</p>
+                        <div class="flex justify-between">
+                            <span class="text-rose-500">Kamu: ${item.userAnswer || '-'}</span>
+                            <span class="text-emerald-600 font-bold">Benar: ${item.correctAnswer}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // INTEGRASI: Kirim Score + Detail Kesalahan
             window.parent.postMessage({ 
                 type: 'SAVE_SCORE_ADVANCED', 
-                score: Math.round(score),
-                wrongAnswers: wrongAnswersReport
+                score: finalScoreVal,
+                wrongAnswers: wrongAnswersReport,
+                totalQuestions: totalQuestions,
+                studentName: "Kayla Zahra Safitri",
+                date: "2026-05-08"
             }, '*');
         }
 
         function calculateResults() {
-            let correct = 0;
+            const formData = new FormData(document.getElementById('quiz-form'));
+            let correctCount = 0;
             wrongAnswersReport = [];
+
             questionsData.forEach((item, index) => {
-                const ans = userAnswers[index];
-                if (ans === item.a) correct++;
-                else wrongAnswersReport.push({ question: item.q, userAnswer: ans, correctAnswer: item.a });
+                const userChoice = formData.get(`q${index}`);
+                if (userChoice === item.a) {
+                    correctCount++;
+                } else {
+                    wrongAnswersReport.push({
+                        question: item.q,
+                        userAnswer: userChoice,
+                        correctAnswer: item.a
+                    });
+                }
             });
-            score = (correct / 24) * 100;
+
+            score = (correctCount / totalQuestions) * 100;
         }
     </script>
 </body>
