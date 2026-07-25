@@ -34,9 +34,9 @@
     <!-- Start Screen -->
     <div id="start-screen" class="max-w-xl mx-auto bg-white rounded-[2rem] p-8 shadow-sm border border-slate-100 text-center">
         <div class="mb-6">
-            <div class="w-20 h-20 bg-indigo-50 rounded-3xl flex items-center justify-center mx-auto text-3xl mb-4">🍱</div>
+            <div class="w-20 h-20 bg-indigo-50 rounded-3xl flex items-center justify-center mx-auto text-3xl mb-4">📝</div>
             <h1 class="text-2xl font-black text-slate-800 uppercase tracking-tight">Ulangan Kosakata</h1>
-            <p class="text-slate-400 text-xs font-bold mt-1 tracking-widest">INGGRIS - INDONESIA (FOOD & DAILY)</p>
+            <p class="text-slate-400 text-xs font-bold mt-1 tracking-widest">INGGRIS - INDONESIA (SLIDE VERSION)</p>
         </div>
 
         <div class="bg-slate-50 rounded-2xl p-6 mb-8 text-left space-y-3">
@@ -46,7 +46,7 @@
             </div>
             <div class="flex justify-between text-[11px] font-bold uppercase tracking-wider">
                 <span class="text-slate-400">Hari, Tanggal:</span>
-                <span class="text-slate-800">Jumat, 15 Mei 2026</span>
+                <span class="text-slate-800">Jumat, 31 Juli 2026</span>
             </div>
             <div class="flex justify-between text-[11px] font-bold uppercase tracking-wider">
                 <span class="text-slate-400">Durasi:</span>
@@ -54,7 +54,7 @@
             </div>
             <div class="flex justify-between text-[11px] font-bold uppercase tracking-wider">
                 <span class="text-slate-400">Jumlah Soal:</span>
-                <span class="text-slate-800">34 Pilihan Ganda</span>
+                <span class="text-slate-800">9 Pilihan Ganda</span>
             </div>
         </div>
 
@@ -73,7 +73,7 @@
                     <div class="w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                         <div id="progress-bar" class="h-full bg-indigo-600 transition-all duration-300" style="width: 0%"></div>
                     </div>
-                    <p id="progress-text" class="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">Soal 1/34</p>
+                    <p id="progress-text" class="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">Soal 1/9</p>
                 </div>
             </div>
             <div class="text-right">
@@ -103,7 +103,7 @@
     <div id="result-screen" class="hidden max-w-xl mx-auto text-center py-12">
         <div id="result-icon" class="w-24 h-24 rounded-[2.5rem] flex items-center justify-center mx-auto text-4xl mb-6 shadow-xl"></div>
         <h2 id="result-status" class="text-2xl font-black text-slate-800 uppercase tracking-tight mb-2"></h2>
-        <p class="text-slate-400 text-sm mb-8">Data nilai dan perbaikan telah dikirim ke sistem.</p>
+        <p class="text-slate-400 text-sm mb-8">Hasil evaluasi belajar kamu telah terekam.</p>
         
         <div class="bg-white rounded-[2rem] p-10 border border-slate-100 shadow-sm inline-block min-w-[200px] mb-10">
             <span class="block text-slate-400 text-[10px] font-black uppercase tracking-[0.3em] mb-2">Skor Akhir</span>
@@ -112,7 +112,7 @@
 
         <div id="review-container" class="text-left max-w-md mx-auto hidden">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest">Analisis Kesalahan</h3>
+                <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest">Laporan Perbaikan</h3>
                 <span id="wrong-count" class="bg-rose-50 text-rose-500 text-[10px] px-2 py-1 rounded-lg font-bold"></span>
             </div>
             <div id="wrong-answers-list" class="space-y-3"></div>
@@ -121,45 +121,15 @@
 
     <script>
         const questionsData = [
-            // Colors
-            { q: "Apa arti dari 'brown'?", a: "Cokelat", o: ["Hitam", "Biru", "Cokelat", "Putih", "Merah"] },
-            { q: "Apa arti dari 'orange'?", a: "Oranye", o: ["Kuning", "Merah", "Hijau", "Oranye", "Biru"] },
-            { q: "Apa bahasa Inggris dari 'Hijau'?", a: "Green", o: ["Blue", "Yellow", "Green", "Black", "White"] },
-            { q: "Apa arti dari 'blue'?", a: "Biru", o: ["Merah", "Kuning", "Biru", "Ungu", "Putih"] },
-            { q: "Apa bahasa Inggris dari 'Putih'?", a: "White", o: ["Grey", "White", "Black", "Brown", "Pink"] },
-            { q: "Apa arti dari 'black'?", a: "Hitam", o: ["Putih", "Abu-abu", "Hitam", "Cokelat", "Hijau"] },
-            { q: "Apa arti dari 'yellow'?", a: "Kuning", o: ["Merah Muda", "Biru", "Kuning", "Jingga", "Putih"] },
-            { q: "Apa bahasa Inggris dari 'Ungu'?", a: "Purple", o: ["Purple", "Pink", "Green", "Blue", "Red"] },
-            { q: "Apa arti dari 'pink'?", a: "Merah Muda", o: ["Merah Muda", "Merah", "Ungu", "Biru", "Kuning"] },
-            // Stationery
-            { q: "Apa bahasa Inggris dari 'Buku'?", a: "Book", o: ["Bag", "Pen", "Book", "Pencil", "Eraser"] },
-            { q: "Apa arti dari 'pen'?", a: "Pena", o: ["Pensil", "Buku", "Pena", "Tas", "Penghapus"] },
-            { q: "Apa arti dari 'pencil'?", a: "Pensil", o: ["Pena", "Pensil", "Penggaris", "Buku", "Meja"] },
-            { q: "Apa bahasa Inggris dari 'Penghapus'?", a: "Eraser", o: ["Ruler", "Pencil", "Eraser", "Bag", "Book"] },
-            { q: "Apa bahasa Inggris dari 'Tas'?", a: "Bag", o: ["Book", "Bag", "Desk", "Chair", "Pencil"] },
-            // School
-            { q: "Apa arti dari kosakata 'Chair'?", a: "Kursi", o: ["Meja", "Kursi", "Lemari", "Pintu", "Jendela"] },
-            { q: "Apa bahasa Inggris dari 'Meja'?", a: "Table", o: ["Chair", "Desk", "Table", "Wall", "Floor"] },
-            { q: "Apa arti dari kosakata 'Guru'?", a: "Teacher", o: ["Student", "Doctor", "Teacher", "Pilot", "Nurse"] },
-            { q: "Apa bahasa Inggris dari 'Murid'?", a: "Student", o: ["Teacher", "Principal", "Student", "Library", "Office"] },
-            { q: "Apa arti dari 'Ruang Kelas'?", a: "Classroom", o: ["Canteen", "Library", "Classroom", "Hallway", "Garden"] },
-            // People
-            { q: "Apa bahasa Inggris dari 'Bayi'?", a: "Baby", o: ["Child", "Baby", "Adult", "Teenager", "Elder"] },
-            { q: "Apa arti dari 'Keluarga'?", a: "Family", o: ["Friends", "Neighbors", "Family", "Community", "Society"] },
-            { q: "Apa bahasa Inggris dari 'Paman'?", a: "Uncle", o: ["Father", "Uncle", "Aunt", "Grandfather", "Brother"] },
-            { q: "Apa bahasa Inggris dari 'Bibi'?", a: "Aunt", o: ["Mother", "Sister", "Aunt", "Grandmother", "Cousin"] },
-            // Food & Drink
-            { q: "Apa bahasa Inggris dari 'Nasi'?", a: "Rice", o: ["Bread", "Noodle", "Rice", "Milk", "Cake"] },
-            { q: "Apa bahasa Inggris dari 'Roti'?", a: "Bread", o: ["Rice", "Bread", "Cake", "Egg", "Milk"] },
-            { q: "Apa arti dari 'Susu'?", a: "Milk", o: ["Coffee", "Tea", "Milk", "Water", "Juice"] },
-            { q: "Apa bahasa Inggris dari 'Telur'?", a: "Egg", o: ["Meat", "Egg", "Fish", "Rice", "Chicken"] },
-            { q: "Apa arti dari 'Apel'?", a: "Apple", o: ["Orange", "Banana", "Apple", "Grape", "Mango"] },
-            { q: "Apa bahasa Inggris dari 'Pisang'?", a: "Banana", o: ["Apple", "Papaya", "Watermelon", "Banana", "Grape"] },
-            { q: "Apa arti dari 'Kue'?", a: "Cake", o: ["Bread", "Cake", "Chocolate", "Candy", "Cookie"] },
-            { q: "Apa arti dari 'Ikan'?", a: "Fish", o: ["Meat", "Chicken", "Fish", "Egg", "Shrimp"] },
-            { q: "Apa bahasa Inggris dari 'Ayam'?", a: "Chicken", o: ["Cow", "Duck", "Chicken", "Goat", "Bird"] },
-            { q: "Apa bahasa Inggris dari 'Mie'?", a: "Noodle", o: ["Rice", "Pasta", "Noodle", "Soup", "Bread"] },
-            { q: "Apa bahasa Inggris dari 'Makan'?", a: "Eat", o: ["Drink", "Eat", "Sleep", "Walk", "Run"] }
+            { q: "Apa bahasa Inggris dari 'Buku'?", a: "Book", o: ["Book", "Pen", "Bag", "Pencil", "Ruler"] },
+            { q: "Apa bahasa Inggris dari 'Apel'?", a: "Apple", o: ["Banana", "Orange", "Apple", "Grape", "Mango"] },
+            { q: "Apa bahasa Inggris dari 'Bola'?", a: "Ball", o: ["Doll", "Ball", "Car", "Bike", "Kite"] },
+            { q: "Apa bahasa Inggris dari 'Pohon'?", a: "Tree", o: ["Flower", "Grass", "Tree", "Leaf", "Plant"] },
+            { q: "Apa arti dari kosakata 'Bird'?", a: "Burung", o: ["Kucing", "Anjing", "Burung", "Ikan", "Ayam"] },
+            { q: "Apa arti dari kosakata 'Car'?", a: "Mobil", o: ["Motor", "Sepeda", "Mobil", "Bis", "Kereta"] },
+            { q: "Apa bahasa Inggris dari 'Rumah'?", a: "House", o: ["School", "Hospital", "House", "Park", "Store"] },
+            { q: "Apa arti dari kosakata 'School'?", a: "Sekolah", o: ["Rumah", "Sekolah", "Taman", "Pasar", "Kantor"] },
+            { q: "Apa bahasa Inggris dari 'Pulpen'?", a: "Pen", o: ["Pencil", "Pen", "Eraser", "Ruler", "Book"] }
         ];
 
         let currentSlide = 0;
@@ -207,14 +177,18 @@
             document.querySelectorAll('[id^="slide-"]').forEach(s => s.classList.add('slide-hidden'));
             document.getElementById(`slide-${index}`).classList.remove('slide-hidden');
             
+            // Progress Update
             const prog = ((index + 1) / totalQuestions) * 100;
             document.getElementById('progress-bar').style.width = `${prog}%`;
             document.getElementById('progress-text').innerText = `Soal ${index + 1}/${totalQuestions}`;
 
+            // Buttons Visibility
             document.getElementById('prev-btn').classList.toggle('hidden', index === 0);
             
+            // Show Finish button on last slide if answered
             const isLast = index === totalQuestions - 1;
-            document.getElementById('finish-btn').classList.toggle('hidden', !isLast);
+            const finishBtn = document.getElementById('finish-btn');
+            finishBtn.classList.toggle('hidden', !isLast);
             
             currentSlide = index;
         }
@@ -223,8 +197,9 @@
             if (index < totalQuestions - 1) {
                 setTimeout(() => {
                     showSlide(index + 1);
-                }, 350); 
+                }, 300); // Small delay so user sees selection
             } else {
+                // If it's the last question, enable finish button style
                 document.getElementById('finish-btn').classList.remove('hidden');
             }
         }
@@ -295,13 +270,14 @@
                 `).join('');
             }
 
+            // INTEGRASI: Kirim Score + Detail Kesalahan
             window.parent.postMessage({ 
-                type: 'SAVE_SCORE_COMPLETE', 
+                type: 'SAVE_SCORE_ADVANCED', 
                 score: finalScoreVal,
                 wrongAnswers: wrongAnswersReport,
                 totalQuestions: totalQuestions,
                 studentName: "Kayla Zahra Safitri",
-                date: "2026-05-15"
+                date: "2026-07-31"
             }, '*');
         }
 
